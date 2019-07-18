@@ -1,0 +1,298 @@
+/*
+*  Source program for Lab Assignment #8 for CS 2A
+*  Written by Anirudhan Badrinath, 08/01/18
+*
+*/
+
+#include <iostream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+// class prototypes
+class DateProfile {
+private:
+   // private fields
+   char gender, searchGender;
+   int romance, finance;
+   string name;
+
+   // private helper methods
+   double determineGenderFit(DateProfile partner);
+   double determineRomanceFit(DateProfile partner);
+   double determineFinanceFit(DateProfile partner);
+
+public:
+   // class constants
+   static const int MIN_ROMANCE, MAX_ROMANCE;
+   static const int MIN_NAME_LEN, MAX_NAME_LEN;
+   static const int MIN_FINANCE, MAX_FINANCE;
+   static const char GENDER_MALE, GENDER_FEMALE;
+   static const char DEFAULT_GENDER, DEFAULT_SEARCH_GENDER;
+   static const string DEFAULT_NAME;
+   static const int DEFAULT_ROMANCE, DEFAULT_FINANCE;
+   
+   // constructors
+   DateProfile();
+   DateProfile(char gdr, char searchGdr, int rom, int fin, string theName);
+   
+   // mutators and accessors
+   string getName();
+   char getGender();
+   char getSearchGender();
+   int getRomance();
+   int getFinance();
+   bool setName(string theName);
+   bool setGender(char gdr);
+   bool setSearchGender(char searchGdr);
+   bool setRomance(int rom);
+   bool setFinance(int fin);
+   void setAll(char gdr, char searchGdr, int rom, int fin, string theName);
+   void setDefaults();
+
+   // miscellaneous methods
+   double fitValue(DateProfile partner);
+};
+
+// static member initialization
+int const DateProfile::MIN_ROMANCE = 1, DateProfile::MAX_ROMANCE = 10;
+int const DateProfile::MIN_FINANCE = 1, DateProfile::MAX_FINANCE = 10;
+int const DateProfile::MIN_NAME_LEN = 1, DateProfile::MAX_NAME_LEN = 50;
+char const DateProfile::GENDER_MALE = 'M', DateProfile::GENDER_FEMALE = 'F';
+char const DateProfile::DEFAULT_GENDER = DateProfile::GENDER_MALE;
+char const DateProfile::DEFAULT_SEARCH_GENDER = DateProfile::GENDER_FEMALE;
+string const DateProfile::DEFAULT_NAME = "Joe Smith";
+int const DateProfile::DEFAULT_FINANCE = 5, DateProfile::DEFAULT_ROMANCE = 5;
+
+// global scope method prototypes
+void displayTwoProfiles(DateProfile profile1, DateProfile profile2);
+
+// the main method and global scope functions --------------
+int main() {
+   const int INVALID_FINANCE = -100, INVALID_ROMANCE = 0;
+   const string INVALID_NAME = "";
+   const char INVALID_GENDER = 'X';
+
+   // profiles with which fit will be determined
+   DateProfile applicant1('F', 'F', 9, INVALID_FINANCE, "Girl Smith");
+   DateProfile applicant2('M', 'F', 10, 2, INVALID_NAME);
+   DateProfile applicant3('F', 'F', 2, 9, "Joan Peabody");
+   DateProfile applicant4('F', 'M', 7, 3, "Aishwarya Rai");
+   
+   displayTwoProfiles(applicant1, applicant1);
+   displayTwoProfiles(applicant1, applicant2);
+   displayTwoProfiles(applicant1, applicant3);
+   displayTwoProfiles(applicant1, applicant4);
+
+   displayTwoProfiles(applicant2, applicant1);
+   displayTwoProfiles(applicant2, applicant2);
+   displayTwoProfiles(applicant2, applicant3);
+   displayTwoProfiles(applicant2, applicant4);
+
+   displayTwoProfiles(applicant3, applicant1);
+   displayTwoProfiles(applicant3, applicant2);
+   displayTwoProfiles(applicant3, applicant3);
+   displayTwoProfiles(applicant3, applicant4);
+
+   displayTwoProfiles(applicant4, applicant1);
+   displayTwoProfiles(applicant4, applicant2);
+   displayTwoProfiles(applicant4, applicant3);
+   displayTwoProfiles(applicant4, applicant4);
+
+   // to make sure mutators work
+   cout << "\nMutator tests:" << endl;
+   if (!applicant1.setGender('Q'))
+      cout << "  Q not accepted as gender (as it should)" << endl;
+   else
+      cout << "  Q accepted as gender (woops)" << endl;
+   if (!applicant2.setFinance(100))
+      cout << "  100 not accepted as finance value (as it should)" << endl;
+   else
+      cout << "  100 accepted as finance value (woops)" << endl;
+   if (!applicant3.setRomance(0))
+      cout << "  0 not accepted as romance value (as it should)" << endl;
+   else
+      cout << "  0 accepted as romance value (woops)" << endl;
+   if (!applicant4.setName(""))
+      cout << "  \"\" not accepted as name (as it should)" << endl;
+   else
+      cout << "  \"\" accepted as name (woops)" << endl;
+   if (applicant4.setSearchGender('F'))
+      cout << "  F accepted as search gender (as it should)" << endl << endl;
+   else
+      cout << "  F not accepted as search gender (woops)" << endl << endl;
+}
+
+// display fit value between 2 DateProfile's to the user
+void displayTwoProfiles(DateProfile profile1, DateProfile profile2) {
+   cout << "Fit between " << profile1.getName() <<  " and "
+        << profile2.getName() << ":" << endl;
+   cout << "  " << profile1.fitValue(profile2) << endl;
+}
+
+// define all DateProfile class methods --------------------
+
+// default constructor (no params)
+DateProfile::DateProfile() {
+   setDefaults();
+}
+
+// parameter taking constructor (5 params)
+DateProfile::DateProfile(char gdr, char searchGdr, int rom,
+                         int fin, string theName)
+{
+   setAll(gdr, searchGdr, rom, fin, theName);
+}
+
+// determines fit value between this and partner
+double DateProfile::fitValue(DateProfile partner) {
+   if (determineGenderFit(partner) == 0)
+      return 0;
+   // if gender preferences correspond
+   return (determineRomanceFit(partner) + determineFinanceFit(partner)) / 2;
+}
+
+// mutators ------------------------------------------------
+bool DateProfile::setName(string theName) {
+   if (theName.length() < MIN_NAME_LEN || theName.length() > MAX_NAME_LEN)
+      return false;
+   name = theName;
+   return true;
+}
+bool DateProfile::setGender(char gdr) {
+   if (gdr != GENDER_MALE && gdr != GENDER_FEMALE)
+      return false;
+   gender = gdr;
+   return true;
+}
+bool DateProfile::setSearchGender(char searchGdr) {
+   if (searchGdr != GENDER_MALE && searchGdr != GENDER_FEMALE)
+      return false;
+   searchGender = searchGdr;
+   return true;
+}
+bool DateProfile::setRomance(int rom) {
+   if (rom < MIN_ROMANCE || rom > MAX_ROMANCE)
+      return false;
+   romance = rom;
+   return true;
+}
+bool DateProfile::setFinance(int fin) {
+   if (fin < MIN_FINANCE || fin > MAX_FINANCE)
+      return false;
+   finance = fin;
+   return true;
+}
+
+// sets all private fields if valid and sets default if not
+void DateProfile::setAll(char gdr, char searchGdr, int rom,
+                         int fin, string theName) 
+{
+   if (!setGender(gdr))
+      setGender(DEFAULT_GENDER);
+   if (!setSearchGender(searchGdr))
+      setSearchGender(DEFAULT_SEARCH_GENDER);
+   if (!setRomance(rom))
+      setRomance(DEFAULT_ROMANCE);
+   if (!setFinance(fin))
+      setFinance(DEFAULT_FINANCE);
+   if (!setName(theName))
+      setName(DEFAULT_NAME);
+}
+
+// resets all private fields to default values
+void DateProfile::setDefaults() {
+   setGender(DEFAULT_GENDER);
+   setSearchGender(DEFAULT_SEARCH_GENDER);
+   setRomance(DEFAULT_ROMANCE);
+   setFinance(DEFAULT_FINANCE);
+   setName(DEFAULT_NAME);
+}
+
+// accessors -----------------------------------------------
+string DateProfile::getName() {
+   return name;
+}
+char DateProfile::getGender() {
+   return gender;
+}
+char DateProfile::getSearchGender() {
+   return searchGender;
+}
+int DateProfile::getRomance() {
+   return romance;
+}
+int DateProfile::getFinance() {
+   return finance;
+}
+
+// private helper methods ----------------------------------
+
+// determines mutual gender fit between this and partner (0 or 1)
+double DateProfile::determineGenderFit(DateProfile partner) {
+   if (getSearchGender() == partner.getGender() &&
+       getGender() == partner.getSearchGender())
+      return 1;
+   return 0;
+}
+
+// determines romance fit between this and partner (0...1)
+double DateProfile::determineRomanceFit(DateProfile partner) {
+   // returns ratio of difference in romance values over 10
+   return (MAX_ROMANCE - abs(getRomance() - partner.getRomance())) /
+          (double) MAX_ROMANCE;
+}
+
+// determines finance fit between this and partner (0...1)
+double DateProfile::determineFinanceFit(DateProfile partner) {
+   // returns ratio of difference in finance values over 10
+   return (MAX_FINANCE - abs(getFinance() - partner.getFinance())) /
+          (double) MAX_FINANCE;
+}
+
+/*
+-------------------------- Run #1 ----------------------
+Fit between Girl Smith and Girl Smith:
+  1
+Fit between Girl Smith and Joe Smith:
+  0
+Fit between Girl Smith and Joan Peabody:
+  0.45
+Fit between Girl Smith and Aishwarya Rai:
+  0
+Fit between Joe Smith and Girl Smith:
+  0
+Fit between Joe Smith and Joe Smith:
+  0
+Fit between Joe Smith and Joan Peabody:
+  0
+Fit between Joe Smith and Aishwarya Rai:
+  0.8
+Fit between Joan Peabody and Girl Smith:
+  0.45
+Fit between Joan Peabody and Joe Smith:
+  0
+Fit between Joan Peabody and Joan Peabody:
+  1
+Fit between Joan Peabody and Aishwarya Rai:
+  0
+Fit between Aishwarya Rai and Girl Smith:
+  0
+Fit between Aishwarya Rai and Joe Smith:
+  0.8
+Fit between Aishwarya Rai and Joan Peabody:
+  0
+Fit between Aishwarya Rai and Aishwarya Rai:
+  0
+
+Mutator tests:
+  Q not accepted as gender (as it should)
+  100 not accepted as finance value (as it should)
+  0 not accepted as romance value (as it should)
+  "" not accepted as name (as it should)
+  F accepted as search gender (as it should)
+
+Press any key to continue . . .
+
+*/

@@ -1,0 +1,420 @@
+/*
+*  Source program for Lab Assignment #9 for CS 2A
+*  Written by Anirudhan Badrinath, 08/04/18
+*
+*/
+
+#include <iostream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+// class Student prototype -----------------------
+class Student
+{
+private:
+   string lastName;
+   string firstName;
+   int totalPoints;
+   static int sortKey;
+
+public:
+   static const string DEFAULT_NAME;
+   static const int DEFAULT_POINTS = 0;
+   static const int MAX_POINTS = 1000;
+   static const int SORT_BY_FIRST, SORT_BY_LAST, SORT_BY_POINTS;
+
+public:
+   Student(string lst = DEFAULT_NAME, string fst = DEFAULT_NAME,
+      long pts = DEFAULT_POINTS);
+
+   // accessors and mutators
+   string getLastName() { return lastName; }
+   string getFirstName() { return firstName; }
+   int getTotalPoints() { return totalPoints; }
+
+   bool setLastName(string last);
+   bool setFirstName(string first);
+   bool setPoints(int pts);
+
+   static bool setSortKey(int key);
+   static int getSortKey();
+
+   static int compareTwoStudents(Student firstStud, Student secondStud);
+   string toString();
+
+private:
+   static bool validString(string testStr);
+   static bool validPoints(int testPoints);
+
+};  // end of class Student prototype --------------
+
+// class StudentArrayUtilities prototype -----------------------
+class StudentArrayUtilities
+{
+public:
+   static string toString(string title, Student data[], int arraySize);
+   static double getMedianDestructive(Student array[], int arraySize);
+   static void arraySort(Student array[], int arraySize);
+
+private:
+   static bool floatLargestToTop(Student data[], int top);
+   static void mySwap(Student &a, Student &b);
+};
+
+// static initializations that can't be done in-line
+const string Student::DEFAULT_NAME = "zz-error";
+const int Student::SORT_BY_FIRST = 88, Student::SORT_BY_LAST = 98,
+          Student::SORT_BY_POINTS = 108;
+int Student::sortKey = Student::SORT_BY_LAST;
+
+int main()
+{
+   Student studArray1[] =
+   { 
+      Student("last","first", 100),
+      Student("jackson","john", 150),
+      Student("potato","man", 200),
+      Student("ventrilo","abra",250),
+      Student("tester","boy", 125),
+      Student("peterson","daddy",175),
+      Student("genius","frozo", 225),
+      Student("stelling","alpha",75),
+      Student("plant","rect", 275),
+      Student("smith","joe",140),
+      Student("jeremy","conny", 155),
+      Student("north","abe",180),
+      Student("stark","jon", 190),
+      Student("greenie","david",110),
+      Student("lordan","michael", 50)
+   };
+   Student studArray2[] =
+   {
+      Student("last","first", 100),
+      Student("jackson","john", 150),
+      Student("potato","man", 200),
+      Student("ventrilo","abra",250),
+      Student("tester","boy", 125),
+      Student("peterson","daddy",175),
+      Student("genius","frozo", 225),
+      Student("stelling","alpha",75),
+      Student("plant","rect", 275),
+      Student("smith","joe",140),
+      Student("jeremy","conny", 155),
+      Student("north","abe",180),
+      Student("stark","jon", 190),
+      Student("greenie","david",110),
+      Student("lordan","michael", 50),
+      Student("evard","kate", 45)
+   };
+   Student studArray3[] =
+   {
+      Student("sunny","plate", 100)
+   };
+   
+   int arraySize1 = sizeof(studArray1) / sizeof(studArray1[0]),
+       arraySize2 = sizeof(studArray2) / sizeof(studArray2[0]),
+       arraySize3 = sizeof(studArray3) / sizeof(studArray3[0]);
+   
+   // pre-sorting
+   cout << StudentArrayUtilities::toString("Before default sort (even):",
+                                           studArray2, arraySize2);
+   // default sort (last name) and print
+   StudentArrayUtilities::arraySort(studArray2, arraySize2);
+   cout << StudentArrayUtilities::toString("\nAfter default sort (even):",
+                                           studArray2, arraySize2);
+   // sort by first name and print
+   Student::setSortKey(Student::SORT_BY_FIRST);
+   StudentArrayUtilities::arraySort(studArray2, arraySize2);
+   cout << StudentArrayUtilities::toString("\nAfter sort by first (even):",
+                                           studArray2, arraySize2);
+   // sort by points and print
+   Student::setSortKey(Student::SORT_BY_POINTS);
+   StudentArrayUtilities::arraySort(studArray2, arraySize2);
+   cout << StudentArrayUtilities::toString("\nAfter sort by points (even):",
+                                           studArray2, arraySize2);
+   
+   // check if sort key is preserved after finding median
+   Student::setSortKey(Student::SORT_BY_FIRST);
+   cout << "\n\nMedian of even array: "
+        << StudentArrayUtilities::getMedianDestructive(studArray2,
+                                                       arraySize2);
+   if (Student::getSortKey() == Student::SORT_BY_FIRST)
+      cout << "\n\nSuccessfully preserved sort key: "
+           << Student::SORT_BY_FIRST << endl;
+   else
+      cout << "\n\nDid not preserve sort key (woops)" << endl;
+
+   // find medians of other arrays
+   cout << "\nMedian of odd array: "
+        << StudentArrayUtilities::getMedianDestructive(studArray1,
+                                                       arraySize1);
+
+   cout << "\n\nMedian of small array: "
+        << StudentArrayUtilities::getMedianDestructive(studArray3,
+                                                       arraySize3);
+   cout << endl << endl;
+
+}
+
+// beginning of Student method definitions -------------
+
+// constructor requires parameters - no default supplied
+Student::Student(string last, string first, long points)
+{
+   if (!setLastName(last))
+      lastName = DEFAULT_NAME;
+   if (!setFirstName(first))
+      firstName = DEFAULT_NAME;
+   if (!setPoints(points))
+      totalPoints = DEFAULT_POINTS;
+}
+
+bool Student::setLastName(string last)
+{
+   if (!validString(last))
+      return false;
+   lastName = last;
+   return true;
+}
+
+bool Student::setFirstName(string first)
+{
+   if (!validString(first))
+      return false;
+   firstName = first;
+   return true;
+}
+
+bool Student::setPoints(int pts)
+{
+   if (!validPoints(pts))
+      return false;
+   totalPoints = pts;
+   return true;
+}
+
+bool Student::setSortKey(int key) {
+   if (key != SORT_BY_FIRST &&
+       key != SORT_BY_LAST &&
+       key != SORT_BY_POINTS)
+      return false;
+   sortKey = key;
+   return true;
+}
+
+int Student::getSortKey() {
+   return sortKey;
+}
+
+// could be an instance method and, if so, would take one parameter
+int Student::compareTwoStudents(Student firstStud, Student secondStud)
+{
+   int result;
+
+   // use switch statement to determine how to compare students 
+   switch (sortKey) {
+      case SORT_BY_LAST:
+         result = firstStud.lastName.compare(secondStud.lastName);
+         break;
+      case SORT_BY_FIRST:
+         result = firstStud.firstName.compare(secondStud.firstName);
+         break;
+      case SORT_BY_POINTS:
+         result = firstStud.totalPoints - secondStud.totalPoints;
+         break;
+   }
+
+   return result;
+}
+
+string Student::toString()
+{
+   string resultString;
+   ostringstream cnvrtFirst, cnvrtLast, cnvrtPoints;
+
+   cnvrtFirst << firstName;
+   cnvrtLast << lastName;
+   cnvrtPoints << totalPoints;
+
+   resultString = " " + cnvrtLast.str()
+      + ", " + cnvrtFirst.str()
+      + " points: " + cnvrtPoints.str()
+      + "\n";
+   return resultString;
+}
+
+bool Student::validString(string testStr)
+{
+   if (testStr.length() > 0 && isalpha(testStr[0]))
+      return true;
+   return false;
+}
+
+bool Student::validPoints(int testPoints)
+{
+   if (testPoints >= 0 && testPoints <= MAX_POINTS)
+      return true;
+   return false;
+}
+// end of Student method definitions  --------------
+
+// beginning of StudentArrayUtilities method definitions -------------
+
+// print the array with string as a title for the message box
+// this is somewhat controversial - we may or may not want an I/O
+// methods in this class.  we'll accept it today
+string StudentArrayUtilities::toString(string title, Student data[], 
+                                       int arraySize)
+{
+   string output = "";
+
+   // build the output string from the individual Students:
+   for (int k = 0; k < arraySize; k++)
+      output += " " + data[k].toString();
+
+   // return the title (passed in) and the array contents
+   return title + "\n" + output;
+}
+
+// calculates the median of a Student array using the sort key (destructive)
+double StudentArrayUtilities::getMedianDestructive(Student array[],
+                                                   int arraySize)
+{
+   // store old sort key and temporarily set sort key to points
+   int oldSortKey = Student::getSortKey();
+   Student::setSortKey(Student::SORT_BY_POINTS);
+
+   // sort the array so median can be found and restore sort key
+   arraySort(array, arraySize);
+   Student::setSortKey(oldSortKey);
+
+   // even array length
+   if (arraySize % 2 == 0)
+      return (array[(arraySize - 1) / 2].getTotalPoints() + 
+              array[(arraySize - 1) / 2 + 1].getTotalPoints()) / 2.;
+   // odd array length
+   return array[(arraySize - 1) / 2].getTotalPoints();
+}
+
+void StudentArrayUtilities::arraySort(Student array[], int arraySize)
+{
+   for (int k = 0; k < arraySize; k++)
+      // compare with method def to see where inner loop stops
+      if (!floatLargestToTop(array, arraySize - 1 - k))
+         return;
+}
+
+// returns true if a modification was made to the array
+bool StudentArrayUtilities::floatLargestToTop(Student data[], int top)
+{
+   bool changed = false;
+
+   // compare with client call to see where the loop stops
+   for (int k = 0; k < top; k++)
+      if (Student::compareTwoStudents(data[k], data[k + 1]) > 0)
+      {
+         mySwap(data[k], data[k + 1]);
+         changed = true;
+      }
+   return changed;
+}
+
+void StudentArrayUtilities::mySwap(Student &a, Student &b)
+{
+   Student temp("", "", 0);
+
+   temp = a;
+   a = b;
+   b = temp;
+}
+
+// end of StudentArrayUtilities method definitions  --------------
+
+/*
+------------------ RUN -------------------
+Before default sort (even):
+  last, first points: 100
+  jackson, john points: 150
+  potato, man points: 200
+  ventrilo, abra points: 250
+  tester, boy points: 125
+  peterson, daddy points: 175
+  genius, frozo points: 225
+  stelling, alpha points: 75
+  plant, rect points: 275
+  smith, joe points: 140
+  jeremy, conny points: 155
+  north, abe points: 180
+  stark, jon points: 190
+  greenie, david points: 110
+  lordan, michael points: 50
+  evard, kate points: 45
+
+After default sort (even):
+  evard, kate points: 45
+  genius, frozo points: 225
+  greenie, david points: 110
+  jackson, john points: 150
+  jeremy, conny points: 155
+  last, first points: 100
+  lordan, michael points: 50
+  north, abe points: 180
+  peterson, daddy points: 175
+  plant, rect points: 275
+  potato, man points: 200
+  smith, joe points: 140
+  stark, jon points: 190
+  stelling, alpha points: 75
+  tester, boy points: 125
+  ventrilo, abra points: 250
+
+After sort by first (even):
+  north, abe points: 180
+  ventrilo, abra points: 250
+  stelling, alpha points: 75
+  tester, boy points: 125
+  jeremy, conny points: 155
+  peterson, daddy points: 175
+  greenie, david points: 110
+  last, first points: 100
+  genius, frozo points: 225
+  smith, joe points: 140
+  jackson, john points: 150
+  stark, jon points: 190
+  evard, kate points: 45
+  potato, man points: 200
+  lordan, michael points: 50
+  plant, rect points: 275
+
+After sort by points (even):
+  evard, kate points: 45
+  lordan, michael points: 50
+  stelling, alpha points: 75
+  last, first points: 100
+  greenie, david points: 110
+  tester, boy points: 125
+  smith, joe points: 140
+  jackson, john points: 150
+  jeremy, conny points: 155
+  peterson, daddy points: 175
+  north, abe points: 180
+  stark, jon points: 190
+  potato, man points: 200
+  genius, frozo points: 225
+  ventrilo, abra points: 250
+  plant, rect points: 275
+
+
+Median of even array: 152.5
+
+Successfully preserved sort key: 88
+
+Median of odd array: 155
+
+Median of small array: 100
+
+Press any key to continue . . .
+
+*/

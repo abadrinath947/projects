@@ -1,0 +1,184 @@
+/*
+*  Source program for Lab Assignment #5 for CS 2A
+*  Written by Anirudhan Badrinath, 07/21/18
+*
+*/
+
+#include <iostream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+// method prototypes
+char getKeyLetter();
+string getString();
+string maskLetter(string theString, char keyLetter);
+string removeLetter(string theString, char keyLetter);
+int countKey(string theString, char keyLetter);
+
+int main() {
+   int keyLetterCount;
+   char keyLetter = getKeyLetter();
+   string userStrInput = getString(), modifiedStr;
+
+   // display target string but masked (key letter replaced with "-")
+   cout << "\nString with \'" << keyLetter << "\' masked:" << endl;
+   modifiedStr = maskLetter(userStrInput, keyLetter);
+   cout << " " << modifiedStr << endl << endl;
+
+   // display number of instances of key letter in target string
+   keyLetterCount = countKey(userStrInput, keyLetter);
+   cout << "# " << keyLetter << "s: " << keyLetterCount << endl << endl;
+
+   // display target string with key letter instances removed
+   cout << "String with \'" << keyLetter << "\' removed:" << endl;
+   modifiedStr = removeLetter(userStrInput, keyLetter);
+   cout << " " << modifiedStr << endl;
+}
+
+// gets key letter using user input, asks repeatedly if not 1 character long
+char getKeyLetter() {
+   const int REQUIRED_LENGTH = 1; // in letters
+   string userCharInput; 
+  
+   while (true) {
+      cout << "Please enter a SINGLE letter to act as key: ";
+      getline(cin, userCharInput);
+      // user enters a valid length char, get out of loop
+      if (userCharInput.length() == REQUIRED_LENGTH)
+         break;
+   }
+   // return 1st character of string to ensure return type is char
+   return userCharInput[0];
+}
+
+// gets target string using user input, asks repeatedly if <4 characters long
+string getString() {
+   const int MIN_LENGTH = 4; // in letters
+   string userStrInput;
+
+   while (true) {
+      cout << "Please enter a phrase or sentence >= 4 letters:" << endl;
+      getline(cin, userStrInput);
+      // user enters a valid length string, get out of loop
+      if (userStrInput.length() >= MIN_LENGTH)
+         break;
+   }
+
+   return userStrInput;
+}
+
+// masks instances of key letter in target string (replaces with "-")
+string maskLetter(string theString, char keyLetter) {
+   // accumulator string to hold mutated target string
+   string modifiedStr = "";
+   for (int i = 0; i < theString.length(); i++) 
+      // add "-" if char is key letter, append to accumulator string otherwise
+      if (theString[i] == keyLetter)
+         modifiedStr += "-";
+      else
+         modifiedStr += theString[i];
+   
+   return modifiedStr;
+}
+
+// removes all instances of key letter in target string
+string removeLetter(string theString, char keyLetter) {
+   // accumulator string to hold mutated target string
+   string modifiedStr = "";
+   for (int i = 0; i < theString.length(); i++)
+      // add character to accumulator string if it is not key letter
+      if (theString[i] != keyLetter)
+         modifiedStr += theString[i];
+
+   return modifiedStr;
+}
+
+// counts number of times key letter appears in target string
+int countKey(string theString, char keyLetter) {
+   int count = 0;
+   for (int i = 0; i < theString.length(); i++)
+      // increment count if character matches key letter
+      if (theString[i] == keyLetter)
+         count++;
+
+   return count;
+}
+
+/*
+-------------------------- Run #1 ----------------------
+Please enter a SINGLE letter to act as key: "
+Please enter a phrase or sentence >= 4 letters:
+"Hello," he said, "I am wondering how to get better at C++."
+
+String with '"' masked:
+ -Hello,- he said, -I am wondering how to get better at C++.-
+
+# "s: 4
+
+String with '"' removed:
+ Hello, he said, I am wondering how to get better at C++.
+Press any key to continue . . .
+
+-------------------------- Run #2 ----------------------
+Please enter a SINGLE letter to act as key: ?!!
+Please enter a SINGLE letter to act as key: ***
+Please enter a SINGLE letter to act as key: ?1
+Please enter a SINGLE letter to act as key: 1
+Please enter a phrase or sentence >= 4 letters:
+n1n1n1n1n1n1 this part should be either dashes or nothing: 1111111111111111111
+
+String with '1' masked:
+ n-n-n-n-n-n- this part should be either dashes or nothing: -------------------
+
+# 1s: 25
+
+String with '1' removed:
+ nnnnnn this part should be either dashes or nothing:
+Press any key to continue . . .
+
+-------------------------- Run #3 ----------------------
+Please enter a SINGLE letter to act as key: jasidj
+Please enter a SINGLE letter to act as key: ?
+Please enter a phrase or sentence >= 4 letters:
+not
+Please enter a phrase or sentence >= 4 letters:
+eno
+Please enter a phrase or sentence >= 4 letters:
+cha
+Please enter a phrase or sentence >= 4 letters:
+This is a great question?!?!?!
+
+String with '?' masked:
+ This is a great question-!-!-!
+
+# ?s: 3
+
+String with '?' removed:
+ This is a great question!!!
+Press any key to continue . . .
+
+-------------------------- Run #4 ----------------------
+Please enter a SINGLE letter to act as key:
+Please enter a SINGLE letter to act as key:
+Please enter a SINGLE letter to act as key: potato
+Please enter a SINGLE letter to act as key: POTATO
+Please enter a SINGLE letter to act as key: nokia
+Please enter a SINGLE letter to act as key: !
+Please enter a phrase or sentence >= 4 letters:
+r!
+Please enter a phrase or sentence >= 4 letters:
+rama! rama! rama! rama! rama!
+
+String with '!' masked:
+ rama- rama- rama- rama- rama-
+
+# !s: 5
+
+String with '!' removed:
+ rama rama rama rama rama
+Press any key to continue . . .
+
+-------------------------- END RUNS ------------------
+*/

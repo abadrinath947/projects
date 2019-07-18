@@ -1,0 +1,262 @@
+/*
+*  Source program for Lab Assignment #3 for CS 2A
+*  Written by Anirudhan Badrinath, 07/11/18
+*
+*/
+
+#include <iostream>
+#include <string>
+#include <sstream>
+using namespace std;
+
+// main client --------------------------------------------------------
+int main() {
+   // constants for error checking
+   const int MIN_SERVINGS = 1, MAX_SERVINGS = 10;
+   const int MIN_GRAMS = 0, MAX_GRAMS = 1000;
+
+   // food #1 intended constants
+   const string FOOD_1_NAME = "boiled potato";
+   const int FOOD_1_CALORIES_P100G = 72;             // in calories
+   const double FOOD_1_PROTEIN_P100G = 1.8;          // in grams
+   const double FOOD_1_FAT_P100G = 0.10;             // in grams
+   const double FOOD_1_CARBOHYDRATES_P100G = 17.0;   // in grams
+
+   // food #2 intended constants
+   const string FOOD_2_NAME = "strawberry";
+   const int FOOD_2_CALORIES_P100G = 32;             // in calories
+   const double FOOD_2_PROTEIN_P100G = 0.7;          // in grams
+   const double FOOD_2_FAT_P100G = 0.30;             // in grams
+   const double FOOD_2_CARBOHYDRATES_P100G = 7.7;    // in grams
+
+   // food #3 intended constants
+   const string FOOD_3_NAME = "broccoli";
+   const int FOOD_3_CALORIES_P100G = 34;             // in calories
+   const double FOOD_3_PROTEIN_P100G = 2.8;          // in grams
+   const double FOOD_3_FAT_P100G = 0.40;             // in grams
+   const double FOOD_3_CARBOHYDRATES_P100G = 6.6;    // in grams
+
+   // food #4 intended constants
+   const string FOOD_4_NAME = "celery";
+   const int FOOD_4_CALORIES_P100G = 16;             // in calories
+   const double FOOD_4_PROTEIN_P100G = 0.7;          // in grams
+   const double FOOD_4_FAT_P100G = 0.20;             // in grams
+   const double FOOD_4_CARBOHYDRATES_P100G = 3.4;    // in grams
+
+   // variables to store user input and output information (to show to user)
+   string recipeName, userInputStr;
+   int userInputInt, numServings;
+   double totalCarbohydrates, totalCals, totalProtein, totalFat;
+   double carbohydratesPerServing, calsPerServing, 
+          proteinPerServing, fatPerServing;
+   
+   // initialize accumulator variables
+   totalCarbohydrates = 0.;
+   totalProtein = 0.;
+   totalFat = 0.;
+   totalCals = 0;
+
+   // print menu
+   cout << "---------- List of Possible Ingredients ---------" << endl;
+   cout << " Food #1: " << FOOD_1_NAME << endl;
+   cout << " Food #2: " << FOOD_2_NAME << endl;
+   cout << " Food #3: " << FOOD_3_NAME << endl;
+   cout << " Food #4: " << FOOD_4_NAME << endl << endl;
+   
+   // name of recipe
+   cout << "What are you calling this recipe? ";
+   getline(cin, recipeName);
+
+   // get number of servings
+   cout << "How many servings? ";
+   getline(cin, userInputStr);
+   istringstream(userInputStr) >> numServings;
+   
+   // error checking for number of servings, quit if problem
+   if (numServings < MIN_SERVINGS || numServings > MAX_SERVINGS) {
+      cout << "Error - Number of servings out of bounds" << endl;
+      return 1;
+   }
+
+   // food #1 ---------------------------------------------------------
+   cout << "\nHow many grams of " << FOOD_1_NAME << "? ";
+   getline(cin, userInputStr);
+   istringstream(userInputStr) >> userInputInt;
+   
+   // error checking for number of grams in user input, quit if problem
+   if (userInputInt < MIN_GRAMS || userInputInt > MAX_GRAMS) {
+      cout << "Error - Number of grams out of bounds" << endl;
+      return 1;
+   }
+
+   // update accumulators
+   totalCals += userInputInt * (FOOD_1_CALORIES_P100G / 100.);
+   totalFat += userInputInt * (FOOD_1_FAT_P100G / 100.);
+   totalProtein += userInputInt * (FOOD_1_PROTEIN_P100G / 100.);
+   totalCarbohydrates += userInputInt * (FOOD_1_CARBOHYDRATES_P100G / 100.);
+
+   // food #2 ---------------------------------------------------------
+   cout << "How many grams of " << FOOD_2_NAME << "? ";
+   getline(cin, userInputStr);
+   istringstream(userInputStr) >> userInputInt;
+   
+   // error checking for number of grams in user input, quit if problem
+   if (userInputInt < MIN_GRAMS || userInputInt > MAX_GRAMS) {
+      cout << "Error - Number of grams out of bounds" << endl;
+      return 1;
+   }
+
+   // update accumulators
+   totalCals += userInputInt * (FOOD_2_CALORIES_P100G / 100.);
+   totalFat += userInputInt * (FOOD_2_FAT_P100G / 100.);
+   totalProtein += userInputInt * (FOOD_2_PROTEIN_P100G / 100.);
+   totalCarbohydrates += userInputInt * (FOOD_2_CARBOHYDRATES_P100G / 100.);
+
+   // food #3 ---------------------------------------------------------
+   cout << "How many grams of " << FOOD_3_NAME << "? ";
+   getline(cin, userInputStr);
+   istringstream(userInputStr) >> userInputInt;
+
+   // error checking for number of grams in user input, quit if problem
+   if (userInputInt < MIN_GRAMS || userInputInt > MAX_GRAMS) {
+      cout << "Error - Number of grams out of bounds" << endl;
+      return 1;
+   }
+
+   // update accumulators
+   totalCals += userInputInt * (FOOD_3_CALORIES_P100G / 100.);
+   totalFat += userInputInt * (FOOD_3_FAT_P100G / 100.);
+   totalProtein += userInputInt * (FOOD_3_PROTEIN_P100G / 100.);
+   totalCarbohydrates += userInputInt * (FOOD_3_CARBOHYDRATES_P100G / 100.);
+
+   // food #4 ---------------------------------------------------------
+   cout << "How many grams of " << FOOD_4_NAME << "? ";
+   getline(cin, userInputStr);
+   istringstream(userInputStr) >> userInputInt;
+
+   // error checking for number of grams in user input, quit if problem
+   if (userInputInt < MIN_GRAMS || userInputInt > MAX_GRAMS) {
+      cout << "Error - Number of grams out of bounds" << endl;
+      return 1;
+   }
+
+   // update accumulators
+   totalCals += userInputInt * (FOOD_4_CALORIES_P100G / 100.);
+   totalFat += userInputInt * (FOOD_4_FAT_P100G / 100.);
+   totalProtein += userInputInt * (FOOD_4_PROTEIN_P100G / 100.);
+   totalCarbohydrates += userInputInt * (FOOD_4_CARBOHYDRATES_P100G / 100.);
+  
+   // add results for 'per serving' requirement
+   calsPerServing = totalCals / numServings;
+   proteinPerServing = totalProtein / numServings;
+   carbohydratesPerServing = totalCarbohydrates / numServings;
+   fatPerServing = totalFat / numServings;
+
+   // report results --------------------------------------------------
+   cout << "\nNutrition for " << recipeName << " (per serving):" << endl;
+   cout << " Calories: " << calsPerServing << endl;
+   cout << " Protein: " << proteinPerServing << endl;
+   cout << " Fats: " << fatPerServing << endl;
+   cout << " Carbohydrates: " << carbohydratesPerServing << endl;
+   
+   return 0;
+}
+
+/* 
+-------------------------- Run #1 ----------------------
+---------- List of Possible Ingredients ---------
+ Food #1: boiled potato
+ Food #2: strawberry
+ Food #3: broccoli
+ Food #4: celery
+
+What are you calling this recipe? potato and celery salad
+How many servings? 2
+
+How many grams of boiled potato? 200
+How many grams of strawberry? 0
+How many grams of broccoli? 0
+How many grams of celery? 200
+
+Nutrition for potato and celery salad (per serving):
+ Calories: 88
+ Protein: 2.5
+ Fats: 0.3
+ Carbohydrates: 20.4
+Press any key to continue . . .
+
+----------------------------- Run #2 -----------------------
+---------- List of Possible Ingredients ---------
+ Food #1: boiled potato
+ Food #2: strawberry
+ Food #3: broccoli
+ Food #4: celery
+
+What are you calling this recipe? really big smoothie
+How many servings? 10
+
+How many grams of boiled potato? 1000
+How many grams of strawberry? 1000
+How many grams of broccoli? 1000
+How many grams of celery? 100000
+Error - Number of grams out of bounds
+Press any key to continue . . .
+
+----------------------------- Run #3 -----------------------
+---------- List of Possible Ingredients ---------
+ Food #1: boiled potato
+ Food #2: strawberry
+ Food #3: broccoli
+ Food #4: celery
+
+What are you calling this recipe? healthy salad
+How many servings? 5
+
+How many grams of boiled potato? 250
+How many grams of strawberry? 50
+How many grams of broccoli? 500
+How many grams of celery? 750
+
+Nutrition for healthy salad (per serving):
+ Calories: 97.2
+ Protein: 4.82
+ Fats: 0.78
+ Carbohydrates: 20.97
+Press any key to continue . . .
+
+----------------------------- Run #4 -----------------------
+---------- List of Possible Ingredients ---------
+ Food #1: boiled potato
+ Food #2: strawberry
+ Food #3: broccoli
+ Food #4: celery
+
+What are you calling this recipe? small meal
+How many servings? 1
+
+How many grams of boiled potato? 1
+How many grams of strawberry? 1
+How many grams of broccoli? 1
+How many grams of celery? 5
+
+Nutrition for small meal (per serving):
+ Calories: 2.18
+ Protein: 0.088
+ Fats: 0.018
+ Carbohydrates: 0.483
+Press any key to continue . . .
+
+----------------------------- Run #5 -----------------------
+---------- List of Possible Ingredients ---------
+ Food #1: boiled potato
+ Food #2: strawberry
+ Food #3: broccoli
+ Food #4: celery
+
+What are you calling this recipe? too large meal
+How many servings? 100
+Error - Number of servings out of bounds
+Press any key to continue . . .
+
+----------------------------- END RUNS ---------------------
+*/

@@ -1,0 +1,294 @@
+/*
+*  Source program for Lab Assignment #7 for CS 2A
+*  Written by Anirudhan Badrinath, 07/28/18
+*
+*/
+
+#include <iostream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+// class prototypes
+class ITunes {
+private:
+   // private fields
+   string name, artist;
+   int bitrate, totalTime;
+
+public:
+   // class constants
+   static const int MIN_BITRATE, MAX_BITRATE;
+   static const int MIN_STR_LENGTH, MAX_STR_LENGTH;
+   static const int MIN_PLAY_TIME, MAX_PLAY_TIME;
+   static const int DEFAULT_BITRATE, DEFAULT_PLAY_TIME;
+   static const string DEFAULT_STRING;
+   
+   // constructors
+   ITunes();
+   ITunes(string theName, string theArtist, int br, int theTime);
+   
+   // mutators and accessors
+   string getName();
+   string getArtist();
+   int getBitrate();
+   int getTotalTime();
+   bool setName(string name);
+   bool setArtist(string artist);
+   bool setBitrate(int bitrate);
+   bool setTotalTime(int time);
+
+   // miscellaneous methods
+   string toString();
+   void setDefaults();
+   void display();
+};
+
+// static member initialization
+int const ITunes::MIN_BITRATE = 64, ITunes::MAX_BITRATE = 705;
+int const ITunes::MIN_STR_LENGTH = 1, ITunes::MAX_STR_LENGTH = 128;
+int const ITunes::MIN_PLAY_TIME = 1000, ITunes::MAX_PLAY_TIME = 1000 * 60 * 60;
+int const ITunes::DEFAULT_BITRATE = 64, ITunes::DEFAULT_PLAY_TIME = 1000;
+string const ITunes::DEFAULT_STRING = " (undefined) ";
+
+// the main method -----------------------------------------
+int main() {
+   // testing constants for mutator tests
+   const int INVALID_BITRATE = 10000;
+   const string INVALID_NAME = "", VALID_NAME = "This is America";
+
+   // using default constructor
+   ITunes entryOne, entryTwo;
+
+   // using parameter taking contructor
+   ITunes entryThree("Vishnu Sahasranamam", "MSS", 80, 0);
+   ITunes entryFour("", "SPB", 2001, 2009);
+
+   cout << "Initial values for all four entries: " << endl << endl;
+   entryOne.display();
+   entryTwo.display();
+   entryThree.display();
+   entryFour.display();
+
+   // Mutate all the four entries
+   entryOne.setArtist("Anirudhan Badrinath");
+   entryOne.setBitrate(650);
+   entryOne.setName("The C++ Song");
+
+   entryTwo.setName("Some Other Song");
+   entryTwo.setTotalTime(9000);
+
+   entryThree.setTotalTime(1800000);
+   entryThree.setArtist("M.S. Subbulakshmi");
+
+   entryFour.setName("Nil Nil Nil");
+   entryFour.setBitrate(65);
+
+   cout << "\n\nMutated values for all four entries: " << endl << endl;
+   entryOne.display();
+   entryTwo.display();
+   entryThree.display();
+   entryFour.display();
+
+   // Set all 4 entries to default values
+   entryOne.setDefaults();
+   entryTwo.setDefaults();
+   entryThree.setDefaults();
+   entryFour.setDefaults();
+
+   cout << "\n\nDefault values for all four entries: " << endl << endl;
+   entryOne.display();
+   entryTwo.display();
+   entryThree.display();
+   entryFour.display();
+
+   // Mutator tests with if statements
+   cout << "\n\nMutator tests (to make sure they work):" << endl << endl;
+   if (!entryTwo.setBitrate(INVALID_BITRATE))
+      cout << "Setting an invalid bitrate failed (as it should)" << endl;
+   else 
+      cout << "Setting an invalid bitrate worked (woops)" << endl;
+   if (!entryTwo.setName(INVALID_NAME))
+      cout << "Setting an invalid name failed (as it should)" << endl;
+   else
+      cout << "Setting an invalid name worked (woops)" << endl;
+   if (entryTwo.setName(VALID_NAME))
+      cout << "Setting a valid name worked (as it should)" << endl;
+   else
+      cout << "Setting a valid name failed (woops)" << endl;
+   
+   // Accessor tests (using cout to output to screen)
+   cout << "\n\nAccessor tests (to make sure they work):" << endl << endl;
+   cout << "entryFour (name): " << entryFour.getName() << endl;
+   cout << "entryThree (bitrate): " << entryThree.getBitrate() << endl;
+   cout << "entryTwo (name): " << entryTwo.getName() << endl << endl;
+
+}
+
+// define all ITunes class methods -------------------------
+
+// default constructor (no params)
+ITunes::ITunes() {
+   setDefaults();
+}
+
+// parameter-taking constructor
+ITunes::ITunes(string theName, string theArtist, int br, int theTime) {
+   if (!setName(theName)) 
+      setName(DEFAULT_STRING);
+   if (!setArtist(theArtist)) 
+      setArtist(DEFAULT_STRING);
+   if (!setBitrate(br))
+      setBitrate(DEFAULT_BITRATE);
+   if (!setTotalTime(theTime))
+      setTotalTime(DEFAULT_PLAY_TIME);
+}
+
+// accessors
+string ITunes::getName() {
+   return name;
+}
+string ITunes::getArtist() {
+   return artist;
+}
+int ITunes::getBitrate() {
+   return bitrate;
+}
+int ITunes::getTotalTime() {
+   return totalTime;
+}
+
+// mutators
+bool ITunes::setName(string theName) {
+   // invalid or out-of-bounds value
+   if (theName.length() < MIN_STR_LENGTH ||
+       theName.length() > MAX_STR_LENGTH)
+      return false;
+   name = theName;
+   return true;
+}
+bool ITunes::setArtist(string theArtist) {
+   // invalid or out-of-bounds value
+   if (theArtist.length() < MIN_STR_LENGTH ||
+       theArtist.length() > MAX_STR_LENGTH)
+      return false;
+   artist = theArtist;
+   return true;
+}
+bool ITunes::setBitrate(int theBitrate) {
+   // invalid or out-of-bounds value
+   if (theBitrate < MIN_BITRATE || theBitrate > MAX_BITRATE)
+      return false;
+   bitrate = theBitrate;
+   return true;
+}
+bool ITunes::setTotalTime(int theTotalTime) {
+   // invalid or out-of-bounds value
+   if (theTotalTime < MIN_PLAY_TIME || theTotalTime > MAX_PLAY_TIME)
+      return false;
+   totalTime = theTotalTime;
+   return true;
+}
+
+// represent iTunes object as a string
+string ITunes::toString() {
+   return artist + ", " + name + ", " + to_string(totalTime) + " milli"
+         "seconds, " + to_string(bitrate) + "k bits per second";
+}
+
+// set all instance fields to default values
+void ITunes::setDefaults() {
+   setName(DEFAULT_STRING);
+   setArtist(DEFAULT_STRING);
+   setBitrate(DEFAULT_BITRATE);
+   setTotalTime(DEFAULT_PLAY_TIME);
+}
+
+// output string representation of iTunes object to screen
+void ITunes::display() {
+   cout << "iTunes entry: " << endl;
+   cout << "=======================================" << endl;
+   cout << toString() << endl;
+   cout << "=======================================" << endl;
+}
+
+/*
+-------------------------- Run #1 ----------------------
+Initial values for all four entries:
+
+iTunes entry:
+=======================================
+ (undefined) ,  (undefined) , 1000 milliseconds, 64k bits per second
+=======================================
+iTunes entry:
+=======================================
+ (undefined) ,  (undefined) , 1000 milliseconds, 64k bits per second
+=======================================
+iTunes entry:
+=======================================
+MSS, Vishnu Sahasranamam, 1000 milliseconds, 80k bits per second
+=======================================
+iTunes entry:
+=======================================
+SPB,  (undefined) , 2009 milliseconds, 64k bits per second
+=======================================
+
+
+Mutated values for all four entries:
+
+iTunes entry:
+=======================================
+Anirudhan Badrinath, The C++ Song, 1000 milliseconds, 650k bits per second
+=======================================
+iTunes entry:
+=======================================
+ (undefined) , Some Other Song, 9000 milliseconds, 64k bits per second
+=======================================
+iTunes entry:
+=======================================
+M.S. Subbulakshmi, Vishnu Sahasranamam, 1800000 milliseconds, 80k bits per second
+=======================================
+iTunes entry:
+=======================================
+SPB, Nil Nil Nil, 2009 milliseconds, 65k bits per second
+=======================================
+
+
+Default values for all four entries:
+
+iTunes entry:
+=======================================
+ (undefined) ,  (undefined) , 1000 milliseconds, 64k bits per second
+=======================================
+iTunes entry:
+=======================================
+ (undefined) ,  (undefined) , 1000 milliseconds, 64k bits per second
+=======================================
+iTunes entry:
+=======================================
+ (undefined) ,  (undefined) , 1000 milliseconds, 64k bits per second
+=======================================
+iTunes entry:
+=======================================
+ (undefined) ,  (undefined) , 1000 milliseconds, 64k bits per second
+=======================================
+
+
+Mutator tests (to make sure they work):
+
+Setting an invalid bitrate failed (as it should)
+Setting an invalid name failed (as it should)
+Setting a valid name worked (as it should)
+
+
+Accessor tests (to make sure they work):
+
+entryFour (name):  (undefined)
+entryThree (bitrate): 64
+entryTwo (name): This is America
+
+Press any key to continue . . .
+
+-------------------------- END RUN ----------------------
+*/

@@ -1,0 +1,56 @@
+/*
+ *  Source program for Lab Assignment #2 for CS 2A
+ *  Written by Anirudhan Badrinath, 07/07/18
+ *
+ */
+
+#include <iostream>
+using namespace std;
+
+int main() {
+   // sets up stud. ID, number of letters in last name, and intResult
+   int studID = 20346732, intResult, numLet = 9;
+   // needed for precise computations (doubleResult)
+   double doubleResult;
+   // print last name and stud. ID
+   cout << "My last (family) name is Badrinath \n";
+   cout << "My Student ID is " << studID << "\n";
+   // output number of letters in last name
+   cout << "The number of characters in my last name is " << numLet << "\n\n";
+   // set intResult to stud. ID modulo 2 and print
+   intResult = studID % 2;
+   cout << "Expression #1 ------------ : " << intResult << "\n\n";
+   // set intResult to stud. ID modulo number of letters in last name, print
+   intResult = studID % numLet;
+   cout << "Expression #2 ------------ : " << intResult << "\n\n";
+   // divide studID by numLet (retain precision), print
+   doubleResult = (double)studID / numLet;
+   cout << "Expression #3 ------------ : " << doubleResult << "\n\n";
+   // calculate Exp. #4 and store in intResult, print
+   intResult = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9;
+   cout << "Expression #4 ------------ : " << intResult << "\n\n";
+   // perform the complex operation (Exp. #5), store in doubleResult, print
+   doubleResult = 100000 / (99 + ((double)(studID) - 54321) /
+                           ((numLet + 30) * (numLet + 30)));
+   cout << "Expression #5 ------------ : " << doubleResult << "\n\n";
+   return 0;
+}
+
+/* ------------------- Run --------------------
+My last (family) name is Badrinath
+My Student ID is 20346732
+The number of characters in my last name is 9
+
+Expression #1 ------------ : 0
+
+Expression #2 ------------ : 0
+
+Expression #3 ------------ : 2.26075e+06
+
+Expression #4 ------------ : 45
+
+Expression #5 ------------ : 7.4402
+
+Press any key to continue . . .
+
+---------------------- End Run ---------------- */

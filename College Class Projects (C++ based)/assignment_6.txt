@@ -1,0 +1,947 @@
+/*
+*  Source program for Lab Assignment #6 for CS 2A
+*  Written by Anirudhan Badrinath, 07/25/18
+*
+*/
+
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <ctime>
+
+using namespace std;
+
+// intended symbolic constants for global-scope methods
+const string STR_BAR = "BAR", STR_CHERRIES = "cherries",
+             STR_SPACE = "(space)", STR_SEVEN = "7";
+const double PROB_BAR = 0.40, PROB_CHERRIES = 0.30, PROB_SPACE = 0.05,
+             PROB_SEVEN = 0.25;
+const int ALL_SEVEN_MULT = 100, ALL_BAR_MULT = 50, ALL_CHERRIES_MULT = 30,
+          DOUBLE_CHERRIES_MULT = 15, SINGLE_CHERRIES_MULT = 5, 
+          NO_WIN_MULT = 0;
+const int MIN_BET = 0, MAX_BET = 50;
+
+// class prototypes
+class TripleString {
+private:
+   // private fields
+   string string1, string2, string3;
+   
+   // private helper method
+   bool validString(string str);
+
+public:
+   // class constants
+   static const int MAX_LEN;
+   
+   // default constructor (no params)
+   TripleString();
+   
+   // mutators and accessors
+   string getString1();
+   string getString2();
+   string getString3();
+   bool setString1(string str);
+   bool setString2(string str);
+   bool setString3(string str);
+};
+
+// static member initialization for TripleString class
+int const TripleString::MAX_LEN = 20;
+
+// global-scope method prototypes
+int getBet();
+TripleString pull();
+string randString();
+int getPayMultiplier(TripleString thePull);
+void display(TripleString thePull, int winnings);
+
+// the main method and global scope methods -------------------
+int main() {
+   // to seed random number generator (don't regen the same numbers)
+   srand(time(NULL));
+   
+   while (true) {
+      // loop till user breaks loop by entering 0
+      int userBet = getBet(), winningsMult;
+      if (userBet == MIN_BET)
+         break;
+      
+      // print message and pull a TripleString
+      cout << "whirrrrrr .... and your pull is ... " << endl;
+      TripleString thePull = pull();
+
+      // find winning multiplier and display results
+      winningsMult = getPayMultiplier(thePull);
+      display(thePull, userBet * winningsMult);
+   }
+   cout << "Thanks for coming" << endl;
+}
+
+// get a valid bet amount from user and return to client
+int getBet() {
+   string userBetInput;
+   int userBet;
+   
+   while (true) {
+      cout << "How much would you like to bet "
+              "(" << MIN_BET + 1 << "-" << MAX_BET << ")"
+              " or " << MIN_BET << " to quit? ";
+      getline(cin, userBetInput);
+      istringstream(userBetInput) >> userBet;
+      // break loop once user bet is valid
+      if (userBet >= MIN_BET && userBet <= MAX_BET)
+         break;
+   }
+
+   // return the bet to client after breaking loop
+   return userBet;
+}
+
+// generate TripleString object with 3 randomly generated strings
+TripleString pull() {
+   TripleString thePull;
+
+   thePull.setString1(randString());
+   thePull.setString2(randString());
+   thePull.setString3(randString());
+
+   // return TripleString with 3 random strings to client
+   return thePull;
+}
+
+// generate random string out of 4 possibilities based on defined probabilies
+string randString() {
+   // generates number from 0 (inclusive) to 1 (exclusive)
+   double randNum = rand() / (RAND_MAX + 1.0);
+   if (randNum < PROB_BAR)
+      return STR_BAR;
+   else if (randNum < PROB_BAR + PROB_CHERRIES)
+      return STR_CHERRIES;
+   else if (randNum < PROB_BAR + PROB_CHERRIES + PROB_SPACE)
+      return STR_SPACE;
+   return STR_SEVEN;
+}
+
+// returns the pay multiplier for a particular TripleString pull
+int getPayMultiplier(TripleString thePull) {
+   if (thePull.getString1() == STR_SEVEN &&
+       thePull.getString2() == STR_SEVEN &&
+       thePull.getString3() == STR_SEVEN)
+      return ALL_SEVEN_MULT;
+   else if (thePull.getString1() == STR_BAR &&
+            thePull.getString2() == STR_BAR &&
+            thePull.getString3() == STR_BAR)
+      return ALL_BAR_MULT;
+   else if (thePull.getString1() == STR_CHERRIES &&
+            thePull.getString2() == STR_CHERRIES &&
+            thePull.getString3() == STR_CHERRIES)
+      return ALL_CHERRIES_MULT;
+   else if (thePull.getString1() == STR_CHERRIES &&
+            thePull.getString2() == STR_CHERRIES)
+      return DOUBLE_CHERRIES_MULT;
+   else if (thePull.getString1() == STR_CHERRIES &&
+            thePull.getString2() != STR_CHERRIES)
+      return SINGLE_CHERRIES_MULT;
+   // if nothing is won
+   return NO_WIN_MULT;
+}
+
+// display the random pull and the winnings from it
+void display(TripleString thePull, int winnings) {
+   cout << " " << thePull.getString1() <<
+           " " << thePull.getString2() <<
+           " " << thePull.getString3() << endl;
+   // non-zero winnings should display congrats
+   if (winnings != 0)
+      cout << "Congratulations, you win: " << winnings << endl << endl;
+   else
+      cout << "Sorry, you lose." << endl << endl;
+}
+
+// define all TripleString member methods ---------------------
+
+// constructor - sets all private fields to empty strings
+TripleString::TripleString() {
+   string1 = string2 = string3 = "";
+}
+
+// helper method
+bool TripleString::validString(string str) {
+   return str.length() <= MAX_LEN;
+}
+
+// mutators
+bool TripleString::setString1(string str) {
+   if (!validString(str))
+      return false;
+   string1 = str;
+   return true;
+}
+bool TripleString::setString2(string str) {
+   if (!validString(str))
+      return false;
+   string2 = str;
+   return true;
+}
+bool TripleString::setString3(string str) {
+   if (!validString(str))
+      return false;
+   string3 = str;
+   return true;
+}
+
+// accessors
+string TripleString::getString1() {
+   return string1;
+}
+string TripleString::getString2() {
+   return string2;
+}
+string TripleString::getString3() {
+   return string3;
+}
+
+/*
+Pull group #10 was all BARs
+Pull group #142 was all cherries
+-------------------------- Run #1 ----------------------
+How much would you like to bet (1-50) or 0 to quit? 10
+whirrrrrr .... and your pull is ...
+ cherries cherries BAR
+Congratulations, you win: 150
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 (space) BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 2
+whirrrrrr .... and your pull is ...
+ 7 BAR BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 3
+whirrrrrr .... and your pull is ...
+ cherries cherries BAR
+Congratulations, you win: 45
+
+How much would you like to bet (1-50) or 0 to quit? 4
+whirrrrrr .... and your pull is ...
+ cherries BAR 7
+Congratulations, you win: 20
+
+How much would you like to bet (1-50) or 0 to quit? 5
+whirrrrrr .... and your pull is ...
+ BAR BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 6
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 7
+whirrrrrr .... and your pull is ...
+ 7 BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 8
+whirrrrrr .... and your pull is ...
+ BAR 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 9
+whirrrrrr .... and your pull is ...
+ BAR BAR BAR
+Congratulations, you win: 450
+
+How much would you like to bet (1-50) or 0 to quit? 10
+whirrrrrr .... and your pull is ...
+ (space) cherries 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 11
+whirrrrrr .... and your pull is ...
+ cherries cherries BAR
+Congratulations, you win: 165
+
+How much would you like to bet (1-50) or 0 to quit? 12
+whirrrrrr .... and your pull is ...
+ 7 7 7
+Congratulations, you win: 1200
+
+How much would you like to bet (1-50) or 0 to quit? 13
+whirrrrrr .... and your pull is ...
+ BAR BAR BAR
+Congratulations, you win: 650
+
+How much would you like to bet (1-50) or 0 to quit? 14
+whirrrrrr .... and your pull is ...
+ cherries 7 BAR
+Congratulations, you win: 70
+
+How much would you like to bet (1-50) or 0 to quit? 15
+whirrrrrr .... and your pull is ...
+ BAR cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 16
+whirrrrrr .... and your pull is ...
+ cherries 7 (space)
+Congratulations, you win: 80
+
+How much would you like to bet (1-50) or 0 to quit? 17
+whirrrrrr .... and your pull is ...
+ cherries (space) BAR
+Congratulations, you win: 85
+
+How much would you like to bet (1-50) or 0 to quit? 18
+whirrrrrr .... and your pull is ...
+ BAR 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 19
+whirrrrrr .... and your pull is ...
+ BAR cherries cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 20
+whirrrrrr .... and your pull is ...
+ 7 7 7
+Congratulations, you win: 2000
+
+How much would you like to bet (1-50) or 0 to quit? 21
+whirrrrrr .... and your pull is ...
+ cherries BAR 7
+Congratulations, you win: 105
+
+How much would you like to bet (1-50) or 0 to quit? 22
+whirrrrrr .... and your pull is ...
+ BAR 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 23
+whirrrrrr .... and your pull is ...
+ cherries 7 cherries
+Congratulations, you win: 115
+
+How much would you like to bet (1-50) or 0 to quit? 24
+whirrrrrr .... and your pull is ...
+ 7 BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 25
+whirrrrrr .... and your pull is ...
+ BAR BAR BAR
+Congratulations, you win: 1250
+
+How much would you like to bet (1-50) or 0 to quit? 26
+whirrrrrr .... and your pull is ...
+ 7 BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 27
+whirrrrrr .... and your pull is ...
+ 7 BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 28
+whirrrrrr .... and your pull is ...
+ (space) 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 29
+whirrrrrr .... and your pull is ...
+ cherries BAR cherries
+Congratulations, you win: 145
+
+How much would you like to bet (1-50) or 0 to quit? 30
+whirrrrrr .... and your pull is ...
+ cherries cherries BAR
+Congratulations, you win: 450
+
+How much would you like to bet (1-50) or 0 to quit? 31
+whirrrrrr .... and your pull is ...
+ cherries 7 cherries
+Congratulations, you win: 155
+
+How much would you like to bet (1-50) or 0 to quit? 32
+whirrrrrr .... and your pull is ...
+ BAR 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 33
+whirrrrrr .... and your pull is ...
+ (space) cherries cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 34
+whirrrrrr .... and your pull is ...
+ cherries 7 cherries
+Congratulations, you win: 170
+
+How much would you like to bet (1-50) or 0 to quit? 35
+whirrrrrr .... and your pull is ...
+ BAR cherries 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 36
+whirrrrrr .... and your pull is ...
+ cherries BAR cherries
+Congratulations, you win: 180
+
+How much would you like to bet (1-50) or 0 to quit? 37
+whirrrrrr .... and your pull is ...
+ cherries (space) BAR
+Congratulations, you win: 185
+
+How much would you like to bet (1-50) or 0 to quit? 38
+whirrrrrr .... and your pull is ...
+ BAR 7 cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 39
+whirrrrrr .... and your pull is ...
+ 7 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 40
+whirrrrrr .... and your pull is ...
+ BAR 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 41
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 42
+whirrrrrr .... and your pull is ...
+ BAR BAR BAR
+Congratulations, you win: 2100
+
+How much would you like to bet (1-50) or 0 to quit? 43
+whirrrrrr .... and your pull is ...
+ 7 BAR BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 44
+whirrrrrr .... and your pull is ...
+ cherries BAR 7
+Congratulations, you win: 220
+
+How much would you like to bet (1-50) or 0 to quit? 45
+whirrrrrr .... and your pull is ...
+ BAR 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 46
+whirrrrrr .... and your pull is ...
+ BAR BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 47
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 48
+whirrrrrr .... and your pull is ...
+ BAR cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 49
+whirrrrrr .... and your pull is ...
+ cherries (space) cherries
+Congratulations, you win: 245
+
+How much would you like to bet (1-50) or 0 to quit? 50
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 51
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 BAR (space)
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 2
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? -10
+How much would you like to bet (1-50) or 0 to quit? 100
+How much would you like to bet (1-50) or 0 to quit?
+How much would you like to bet (1-50) or 0 to quit? 3
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 4
+whirrrrrr .... and your pull is ...
+ cherries BAR cherries
+Congratulations, you win: 20
+
+How much would you like to bet (1-50) or 0 to quit? 5
+whirrrrrr .... and your pull is ...
+ cherries cherries 7
+Congratulations, you win: 75
+
+How much would you like to bet (1-50) or 0 to quit? 6
+whirrrrrr .... and your pull is ...
+ BAR 7 cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 7
+whirrrrrr .... and your pull is ...
+ cherries BAR cherries
+Congratulations, you win: 35
+
+How much would you like to bet (1-50) or 0 to quit? 8
+whirrrrrr .... and your pull is ...
+ 7 BAR (space)
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 9
+whirrrrrr .... and your pull is ...
+ cherries cherries 7
+Congratulations, you win: 135
+
+How much would you like to bet (1-50) or 0 to quit? 10
+whirrrrrr .... and your pull is ...
+ BAR 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 11
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 12
+whirrrrrr .... and your pull is ...
+ cherries BAR 7
+Congratulations, you win: 60
+
+How much would you like to bet (1-50) or 0 to quit? 13
+whirrrrrr .... and your pull is ...
+ BAR 7 cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 14
+whirrrrrr .... and your pull is ...
+ cherries BAR BAR
+Congratulations, you win: 70
+
+How much would you like to bet (1-50) or 0 to quit? 15
+whirrrrrr .... and your pull is ...
+ BAR BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 16
+whirrrrrr .... and your pull is ...
+ cherries 7 BAR
+Congratulations, you win: 80
+
+How much would you like to bet (1-50) or 0 to quit? 17
+whirrrrrr .... and your pull is ...
+ BAR cherries cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 18
+whirrrrrr .... and your pull is ...
+ BAR cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 19
+whirrrrrr .... and your pull is ...
+ (space) BAR BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 20
+whirrrrrr .... and your pull is ...
+ 7 cherries 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 21
+whirrrrrr .... and your pull is ...
+ cherries BAR (space)
+Congratulations, you win: 105
+
+How much would you like to bet (1-50) or 0 to quit? 22
+whirrrrrr .... and your pull is ...
+ BAR cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 23
+whirrrrrr .... and your pull is ...
+ BAR BAR BAR
+Congratulations, you win: 1150
+
+How much would you like to bet (1-50) or 0 to quit? 24
+whirrrrrr .... and your pull is ...
+ cherries 7 7
+Congratulations, you win: 120
+
+How much would you like to bet (1-50) or 0 to quit? 25
+whirrrrrr .... and your pull is ...
+ BAR 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 26
+whirrrrrr .... and your pull is ...
+ 7 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 27
+whirrrrrr .... and your pull is ...
+ BAR cherries cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 28
+whirrrrrr .... and your pull is ...
+ 7 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 29
+whirrrrrr .... and your pull is ...
+ cherries cherries BAR
+Congratulations, you win: 435
+
+How much would you like to bet (1-50) or 0 to quit? 30
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 31
+whirrrrrr .... and your pull is ...
+ cherries 7 BAR
+Congratulations, you win: 155
+
+How much would you like to bet (1-50) or 0 to quit? 32
+whirrrrrr .... and your pull is ...
+ 7 cherries cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 33
+whirrrrrr .... and your pull is ...
+ 7 cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 34
+whirrrrrr .... and your pull is ...
+ cherries cherries BAR
+Congratulations, you win: 510
+
+How much would you like to bet (1-50) or 0 to quit? 35
+whirrrrrr .... and your pull is ...
+ BAR cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 36
+whirrrrrr .... and your pull is ...
+ BAR cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 37
+whirrrrrr .... and your pull is ...
+ cherries 7 cherries
+Congratulations, you win: 185
+
+How much would you like to bet (1-50) or 0 to quit? 38
+whirrrrrr .... and your pull is ...
+ cherries BAR 7
+Congratulations, you win: 190
+
+How much would you like to bet (1-50) or 0 to quit? 39
+whirrrrrr .... and your pull is ...
+ BAR 7 cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 40
+whirrrrrr .... and your pull is ...
+ 7 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 41
+whirrrrrr .... and your pull is ...
+ 7 cherries 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 42
+whirrrrrr .... and your pull is ...
+ BAR BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 43
+whirrrrrr .... and your pull is ...
+ BAR 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 44
+whirrrrrr .... and your pull is ...
+ cherries BAR BAR
+Congratulations, you win: 220
+
+How much would you like to bet (1-50) or 0 to quit? 45
+whirrrrrr .... and your pull is ...
+ (space) 7 cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 46
+whirrrrrr .... and your pull is ...
+ cherries BAR BAR
+Congratulations, you win: 230
+
+How much would you like to bet (1-50) or 0 to quit? 47
+whirrrrrr .... and your pull is ...
+ 7 7 7
+Congratulations, you win: 4700
+
+How much would you like to bet (1-50) or 0 to quit? 48
+whirrrrrr .... and your pull is ...
+ BAR (space) cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 49
+whirrrrrr .... and your pull is ...
+ BAR 7 cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 50
+whirrrrrr .... and your pull is ...
+ cherries cherries BAR
+Congratulations, you win: 750
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries 7 BAR
+Congratulations, you win: 5
+
+How much would you like to bet (1-50) or 0 to quit? 2
+whirrrrrr .... and your pull is ...
+ BAR cherries 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 3
+whirrrrrr .... and your pull is ...
+ (space) cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 4
+whirrrrrr .... and your pull is ...
+ BAR cherries (space)
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 5
+whirrrrrr .... and your pull is ...
+ cherries (space) cherries
+Congratulations, you win: 25
+
+How much would you like to bet (1-50) or 0 to quit? 6
+whirrrrrr .... and your pull is ...
+ cherries cherries 7
+Congratulations, you win: 90
+
+How much would you like to bet (1-50) or 0 to quit? 7
+whirrrrrr .... and your pull is ...
+ 7 BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 8
+whirrrrrr .... and your pull is ...
+ 7 (space) cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 9
+whirrrrrr .... and your pull is ...
+ 7 BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 10
+whirrrrrr .... and your pull is ...
+ 7 BAR BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 11
+whirrrrrr .... and your pull is ...
+ 7 BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 12
+whirrrrrr .... and your pull is ...
+ cherries BAR BAR
+Congratulations, you win: 60
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ (space) cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries BAR cherries
+Congratulations, you win: 5
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 BAR 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries cherries BAR
+Congratulations, you win: 15
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries (space) cherries
+Congratulations, you win: 5
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 BAR BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries 7 7
+Congratulations, you win: 5
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR (space) BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR cherries 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR cherries cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries 7 BAR
+Congratulations, you win: 5
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries BAR BAR
+Congratulations, you win: 5
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR cherries 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR cherries (space)
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries 7 7
+Congratulations, you win: 5
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR cherries BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR cherries cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR 7 7
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ BAR BAR cherries
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 7 BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ cherries cherries cherries
+Congratulations, you win: 30
+
+How much would you like to bet (1-50) or 0 to quit? 1
+whirrrrrr .... and your pull is ...
+ 7 BAR BAR
+Sorry, you lose.
+
+How much would you like to bet (1-50) or 0 to quit? -100
+How much would you like to bet (1-50) or 0 to quit? 1000
+How much would you like to bet (1-50) or 0 to quit? 555
+How much would you like to bet (1-50) or 0 to quit? -2
+How much would you like to bet (1-50) or 0 to quit? 555
+How much would you like to bet (1-50) or 0 to quit? 0
+Thanks for coming
+Press any key to continue . . .
+
+*/
