@@ -29,11 +29,11 @@ public class SHA1Tree<E> {
         if (tree == null) {
             return "";
         } else {
-            String ret = "(" + tree.getSHA1() + " ";
+            String ret = "[" + tree.getSHA1();
             for (SHA1Tree<String> child: tree._children) {
-                ret += printTree(child) + " ";
+                ret += " " + printTree(child);
             }
-            ret += ")";
+            ret += "]";
             return ret;
         }
     }

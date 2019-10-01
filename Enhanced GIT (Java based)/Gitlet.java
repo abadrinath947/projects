@@ -73,11 +73,21 @@ public class Gitlet {
             generateCurrentPointers();
             generateBlobs();
             generateCommits();
-            if (args.length == 2) {
+            if (args.length == 2 && this._currentHeadPointer.containsBranch(args[1])) {
+                checkoutBranch(args[1]);
+            } else if (args.length == 2) {
                 checkoutFile(this._currentHeadPointer.getCurrentCommit(), args[1]);
             } else {
                 checkoutFile(args[1], args[2]);
             }
+            writeCurrentPointers();
+        }
+        else if (args[0].equals("reset")) {
+            generateCurrentPointers();
+            generateBlobs();
+            generateCommits();
+            reset(args[1]);
+            writeCurrentPointers();
         }
         else if (args[0].equals("print")) {
             generateCurrentPointers();
@@ -140,6 +150,23 @@ public class Gitlet {
     }
     public void checkoutFile(String SHA1, String file) {
         Utils.writeContents(new File(file), searchCommitSHA1(SHA1).getBlob(file).getContents());
+    }
+    public void checkoutBranch(String branch) {
+        resetCommit(this._currentHeadPointer.getCurrentCommit(branch));
+        this._currentHeadPointer.makeHeadBranch(branch);
+    }
+    public void reset(String identifier) {
+        resetCommit(identifier);
+        this._currentHeadPointer.makeHeadBranch(this._currentHeadPointer.getBranch(), identifier);
+    }
+    private void resetCommit(String identifier) {
+        for (String filename: searchCommitSHA1(this._currentHeadPointer.getCurrentCommit()).getTrackedFiles().keySet()) {
+            new File(filename).delete();
+        }
+        for (Map.Entry<String, String> fileHash: searchCommitSHA1(identifier).getTrackedFiles().entrySet()) {
+            Utils.writeContents(new File(fileHash.getKey()), searchBlobSHA1(fileHash.getValue()).getContents()); 
+        }
+        removeStagedBlobs();
     }
     private void removeUntrackedBlobs() {
         for (String loc: Utils.plainFilenamesIn(new File(".gitlet/untracked/"))) {
@@ -350,14 +377,15 @@ public class Gitlet {
             this._currentCommitPointers.put(this._commitSHA1Tree, null);
         }
         else {
+            SHA1Tree<String> parent = null;
             for (SHA1Tree<String> i: this._currentCommitPointers.keySet()) {
-                SHA1Tree.printTree(i);
                 if (i.getSHA1().equals(commit.getParent())) {
-                    commit.updateBlobs(processModifications(commit, searchCommitSHA1(i.getSHA1())));
-                    this._currentCommitPointers.put(i.addChild(commit.getSHA1()), i);
-                    this._currentCommitPointers.remove(i);
+                    parent = i;
                 }
             }
+            commit.updateBlobs(processModifications(commit, searchCommitSHA1(parent.getSHA1())));
+            this._currentCommitPointers.put(parent.addChild(commit.getSHA1()), parent);
+            this._currentCommitPointers.remove(parent);
         } 
     } 
     private Set<String> processModifications(Commit commit, Commit parent) {

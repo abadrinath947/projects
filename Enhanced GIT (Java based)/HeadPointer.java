@@ -48,8 +48,22 @@ public class HeadPointer {
         this._branchesPointers.remove(branch);
         this._branchesPointers.put(branch, commit);
     }
+    public boolean containsBranch(String branch) {
+        return this._branchesPointers.keySet().contains(branch);
+    }
+    public String getCurrentCommit(String branch) {
+        return this._branchesPointers.get(branch);
+    }
     public String getCurrentCommit() {
-        return this._branchesPointers.get(this._activeBranch);
+        return getCurrentCommit(this._activeBranch);
+    }
+    public void makeHeadBranch(String branch) {
+        this._activeBranch = branch;
+    }
+    public void makeHeadBranch(String branch, String identifier) {
+        makeHeadBranch(branch);
+        this._branchesPointers.remove(branch);
+        this._branchesPointers.put(branch, identifier);
     }
     public String toString() {
         String ret = "";
