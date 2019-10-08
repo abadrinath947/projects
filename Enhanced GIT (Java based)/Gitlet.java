@@ -78,7 +78,7 @@ public class Gitlet {
             } else if (args.length == 2) {
                 checkoutFile(this._currentHeadPointer.getCurrentCommit(), args[1]);
             } else {
-                checkoutFile(args[1], args[2]);
+                checkoutFile(autocomplete(args[1]), args[2]);
             }
             writeCurrentPointers();
         }
@@ -86,8 +86,13 @@ public class Gitlet {
             generateCurrentPointers();
             generateBlobs();
             generateCommits();
-            reset(args[1]);
+            reset(autocomplete(args[1]));
             writeCurrentPointers();
+        }
+        else if (args[0].equals("status")) {
+            generateCurrentPointers();
+            generateBlobs();
+            status(); 
         }
         else if (args[0].equals("print")) {
             generateCurrentPointers();
@@ -105,7 +110,8 @@ public class Gitlet {
             stageDir.mkdirs(); trackedDir.mkdirs(); infoDir.mkdirs(); untrackedDir.mkdirs();
             this._currentHeadPointer = new HeadPointer("master");
             makeFirstCommit();
-            initCleanup();
+            writeCurrentPointers();
+            writeCommits(); 
         }
     }
     public void commit(String commitMessage, Date timestamp) {
@@ -159,6 +165,34 @@ public class Gitlet {
         resetCommit(identifier);
         this._currentHeadPointer.makeHeadBranch(this._currentHeadPointer.getBranch(), identifier);
     }
+    public void status() {
+        System.out.println("=== Branches ===");
+        printBranches();
+        System.out.println("\n=== Staged Files ===");
+        printFiles(this._stagedBlobs);
+        System.out.println("\n=== Removed Files ===");
+        printFiles(this._untrackedBlobs);
+    }
+    private void printBranches() {
+        List<String> branches = this._currentHeadPointer.getBranches();
+        Collections.sort(branches);
+        for (String branch: branches) {
+            if (branch.equals(this._currentHeadPointer.getBranch())) {
+                System.out.print("*");
+            }
+            System.out.println(branch);
+        }
+    }
+    private void printFiles(Map<String, String> blobs) {
+        List<String> toPrint = new ArrayList<String>(); 
+        for (String blob: blobs.keySet()) {
+            toPrint.add(searchBlobSHA1(blob).getIdentity());
+        }
+        Collections.sort(toPrint);
+        for (String filename: toPrint) {
+            System.out.println(filename);
+        }
+    }
     private void resetCommit(String identifier) {
         for (String filename: searchCommitSHA1(this._currentHeadPointer.getCurrentCommit()).getTrackedFiles().keySet()) {
             new File(filename).delete();
@@ -193,10 +227,6 @@ public class Gitlet {
             }
         }
         return false;
-    }
-    private void initCleanup() {
-        writeCurrentPointers();
-        writeCommits(); 
     }
     private SHA1Tree<String> getHeadPointer() {
         for (SHA1Tree<String> temp: this._currentCommitPointers.keySet()) {
@@ -331,7 +361,6 @@ public class Gitlet {
     private void generateTrackedBlobs(File trackedDir) {
         this._trackedBlobs = new LinkedHashMap<String, String>();
         String[] commits = trackedDir.list(new FilenameFilter() {
-            @Override
             public boolean accept(File current, String name) {
                 return new File(current, name).isDirectory();
             }
@@ -420,6 +449,16 @@ public class Gitlet {
                             "commit " + commit.getSHA1() + "\n" +
                             "Date: " + date + "\n" +
                             commit.getCommitMessage());                         
+    }
+    private String autocomplete(String shortIdentifier) {
+        if (this._commitBindings == null)
+            return null;
+        for (String identifier: this._commitBindings.keySet()) {
+            if (identifier.indexOf(shortIdentifier) != -1) {
+                return identifier;
+            }
+        }
+        return null;
     }
     public static Commit searchCommitSHA1(String match) {
         if (_commitBindings == null) 

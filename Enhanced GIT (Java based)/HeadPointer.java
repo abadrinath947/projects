@@ -65,6 +65,9 @@ public class HeadPointer {
         this._branchesPointers.remove(branch);
         this._branchesPointers.put(branch, identifier);
     }
+    public List<String> getBranches() {
+        return new ArrayList<String>(this._branchesPointers.keySet());
+    }
     public String toString() {
         String ret = "";
         for (Map.Entry<String, String> branchPointer: this._branchesPointers.entrySet()) {
