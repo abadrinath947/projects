@@ -57,7 +57,8 @@ public class Gitlet {
             generateCurrentPointers();
             generateBlobs(); 
             generateCommits();
-            rm(args[1]);
+            for (int i = 1; i < args.length; i++)
+                rm(args[i]);
         }
         else if (args[0].equals("branch")) {
             generateCurrentPointers();
@@ -93,6 +94,12 @@ public class Gitlet {
             generateCurrentPointers();
             generateBlobs();
             status(); 
+        }
+        else if (args[0].equals("merge")) {
+            generateCurrentPointers();
+            generateBlobs();
+            generateCommits();
+            merge(args[1]);
         }
         else if (args[0].equals("print")) {
             generateCurrentPointers();
@@ -173,6 +180,28 @@ public class Gitlet {
         System.out.println("\n=== Removed Files ===");
         printFiles(this._untrackedBlobs);
     }
+    public void merge(String branch) {
+        String commonIdentifier = findCommonIdentifier(getHeadPointer(), getHeadPointer(branch)).getSHA1();
+        if (this._currentHeadPointer.getCurrentCommit(branch).equals(commonIdentifier)) {
+            System.out.println("Given branch is an ancestor of the current branch.");
+            return;
+        } else if (this._currentHeadPointer.getCurrentCommit().equals(commonIdentifier)) {
+            reset(this._currentHeadPointer.getCurrentCommit(branch));
+            System.out.println("Current branch fast-forwarded.");
+            return;
+        }
+        // ifs
+    }
+    private SHA1Tree<String> findCommonIdentifier(SHA1Tree<String> left, SHA1Tree<String> right) {
+        if (left == null || right == null) {
+            return null;
+        } else if (left == right) {
+            return left;
+        } else {
+            SHA1Tree<String> left_parent = findCommonIdentifier(left.getParent(), right), right_parent = findCommonIdentifier(left, right.getParent());
+            return left_parent == null? right_parent : left_parent;
+        }
+    } 
     private void printBranches() {
         List<String> branches = this._currentHeadPointer.getBranches();
         Collections.sort(branches);
@@ -228,14 +257,18 @@ public class Gitlet {
         }
         return false;
     }
-    private SHA1Tree<String> getHeadPointer() {
+    private SHA1Tree<String> getHeadPointer(String identifier) {
         for (SHA1Tree<String> temp: this._currentCommitPointers.keySet()) {
-            if (temp.getSHA1().equals(this._currentHeadPointer.getCurrentCommit())) {
+            if (temp.getSHA1().equals(identifier)) {
                 return temp; 
             }
         }
         return null;
     }
+    private SHA1Tree<String> getHeadPointer() {
+        return getHeadPointer(this._currentHeadPointer.getCurrentCommit());
+    }
+    
     private void writeCurrentPointers() {
         for (String loc: Utils.plainFilenamesIn(new File(".gitlet"))) {
             new File(".gitlet/" + loc).delete();
