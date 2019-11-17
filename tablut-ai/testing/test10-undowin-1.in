@@ -1,0 +1,45 @@
+#* java -ea tablut.Main
+manual white
+new
+dump
+limit 4
+b5-8
+c5-8
+a6-8
+d5-8
+dump
+a5-6
+e5-c
+dump
+a4-5
+c5-1
+undo
+dump
+a4-5
+c5-1
+dump
+undo
+dump
+a4-3
+c5-b
+new
+dump
+b5-6
+c5-6
+undo
+dump
+limit 2
+b5-6
+c5-6
+b6-7
+undo
+dump
+c5-6
+dump
+b6-7
+c6-7
+new
+dump
+limit 0
+limit 1
+quit

@@ -1,0 +1,49 @@
+#* java -ea tablut.Main
+dump 
+manual white
+toggle e5
+dump 
+toggle e5
+dump 
+a6-7 
+c5-6 
+b5-c 
+dump 
+toggle e9
+dump 
+toggle f9
+toggle a7
+toggle a5
+toggle a4
+dump 
+toggle d9
+toggle d1
+dump 
+toggle e1
+toggle f1
+toggle i4
+toggle i5
+toggle i6
+dump 
+toggle h5
+toggle c5
+dump 
+toggle e8
+dump 
+toggle e2
+dump 
+toggle c5
+dump 
+toggle c5
+dump 
+toggle c5
+dump 
+toggle c4
+dump 
+toggle d5
+dump 
+toggle b5
+dump 
+e3-d 
+dump 
+ 
