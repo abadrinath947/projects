@@ -454,6 +454,23 @@ class Board {
         return new String(result);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return ((Board) o)._board.equals(this._board);
+    }
+
+    @Override
+    public int hashCode() {
+        int r = 0;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                Square s = sq(i, j); Piece p = get(s);
+                r = (r << 5) - r + s.index() * (p == Piece.BLACK ? 2 : p == Piece.WHITE ? 1 : p == Piece.KING ? -10 : -50);
+            }
+        }
+        return r;
+    }
+
     /** Return the enemy of Piece CURR. */
     private Piece enemy(Piece curr) {
         return curr == Piece.BLACK ? Piece.WHITE : Piece.BLACK;

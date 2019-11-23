@@ -24,9 +24,9 @@ class AI extends Player {
     private static final int BLACK = 25,
                              WHITE = 50;
     /** Caps for search depths. */
-    private static final int CAP1 = 14,
-                             CAP2 = 18,
-                             CAP3 = 22;
+    private static final int CAP1 = 15,
+                             CAP2 = 25,
+                             CAP3 = 35;
 
     /** A new AI with no piece or controller (intended to produce
      *  a template). */
