@@ -1,5 +1,0 @@
-#!/bin/bash
-staff-tablut $1.in $1.std
-sed -i 's|[>] ||g' $1.std
-sed -i '1d' $1.std
-sed -i '/^*/d' $1.std
